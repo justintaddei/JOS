@@ -1,0 +1,94 @@
+tArgs = { ... }
+if tArgs[2] == "floor" then
+	msg = "Floor complete. "..tArgs[1] .." blocks total"
+elseif tArgs[1] == "wall" then
+	msg = "Wall complete."
+elseif tArgs[1] == nil then
+	msg = "Invalid Data!"
+else
+	msg = "Collected "..tArgs[1].." items total"
+end
+done = "Program made by, Justin Taddei     www.justintaddei.com"
+w, h = term.getSize()
+if term.isColor() then
+	w, h = term.getSize()
+	exit = "   Exit   "
+	exit1 = "          "
+	exit2 = "          "
+	load0 = "[    ]"
+	load1 = "[-   ]"
+	load2 = "[--  ]"
+	load3 = "[--- ]"
+	load4 = "[----]"
+	for i = 0,4 do
+		term.setBackgroundColor(colors.white)
+		term.setTextColor(colors.red)
+		term.clear()
+		term.setCursorPos(w/2 - string.len(load1)/2, h/2)
+		if i == 0 then
+			print(load0)
+		elseif i == 1 then
+			print(load1)
+		elseif i == 2 then
+			print(load2)
+		elseif i == 3 then
+			print(load3)
+		else
+			term.setTextColor(colors.lime)
+			print(load4)
+			sleep(0.4)
+		end
+		sleep(0.25)
+	end
+	term.setBackgroundColor(colors.white)
+	term.clear()
+	term.setTextColor(colors.black)
+	term.setCursorPos(w/2 - string.len(msg)/2, 2)
+	print(msg)
+	term.setCursorPos(w/2 - string.len(exit)/2, h/2 + 2)
+	term.setBackgroundColor(colors.lime)
+	term.setTextColor(colors.black)
+	print(exit1)
+	term.setCursorPos(w/2 - string.len(exit)/2, h/2 + 3)
+	print(exit)
+	term.setCursorPos(w/2 - string.len(exit)/2, h/2 + 4)
+	print(exit2)
+	while true do
+		local event, button, X, Y = os.pullEventRaw()
+		if event == "mouse_click" then
+			if button == 1 and X >= w/2 - string.len(exit)/2 and X <= w/2 + string.len(exit)/2 and Y >= h/2 + 2 and Y <= h/2 + 4 then
+				term.setBackgroundColor(colors.white)
+				term.setTextColor(colors.black)
+				term.clear()
+				term.setCursorPos(1, 1)
+				print(done)
+				sleep(3.5)
+				term.setCursorPos(1,1)
+				term.setBackgroundColor(colors.black)
+				term.setTextColor(colors.white)
+				term.clear()
+				shell.run("reboot")
+			end
+		end
+	end
+else
+	term.setBackgroundColor(colors.white)
+	term.setTextColor(colors.black)
+	term.clear()
+	term.setCursorPos(1,1)
+	print(msg)
+	sleep(2)
+	term.setCursorPos(1,2)
+	print("Press enter to exit.")
+	term.setCursorBlink(false)
+	wait = read()
+	term.setBackgroundColor(colors.white)
+	term.setTextColor(colors.black)
+	term.clear()
+	term.setCursorPos(1, 1)
+	print(done)
+	sleep(3.5)
+	term.setBackgroundColor(colors.black)
+	term.setTextColor(colors.white)
+	shell.run("reboot")
+end

@@ -1,0 +1,427 @@
+-- Builds a wall
+
+if term.isColor() then
+	term.setTextColor(colors.orange)
+	term.setBackgroundColor(colors.black)
+else
+	term.setTextColor(colors.black)
+	term.setBackgroundColor(colors.white)
+end
+term.clear()
+term.setCursorPos(1,1)
+print("Put blocks in slots 1 - 8 and fuel in slots 9 - 16")
+print("Enter length:")
+length = read()
+length = length + 1 - 1
+if length <= 0 then
+	print("Langth must be positive!")
+	sleep(2)
+	shell.run("wall")
+end
+print("Enter height:")
+height = read()
+height = height + 1 - 1
+if height <= 0 then
+	print("Height must be positive!")
+	sleep(2)
+	shell.run("wall")
+end
+print("Enter style: (standard, castle, vaulted)")
+style = read()
+if style ~= "standard" and style ~= "castle" and style ~= "vaulted" then
+	print(style .. " is not a valid style.")
+	print("Try standard, castle, or vaulted")
+	sleep(3.5)
+	shell.run("wall")
+end
+dir = 0
+prevDir = dir
+zPos = 1
+prevZPos = zPos
+yPos = 1
+prevYPos = yPos
+setPrevPos = true
+done = false
+function turn(newDir)
+	if dir == 0 then
+		if newDir == 1 then
+			turtle.turnRight()
+			dir = newDir
+		elseif newDir == 2 then
+			turtle.turnRight()
+			turtle.turnRight()
+			dir = newDir
+		elseif newDir == 3 then
+			turtle.turnLeft()
+			dir = newDir
+		else
+			return true
+		end
+	elseif dir == 1 then
+		if newDir == 0 then
+			turtle.turnLeft()
+			dir = newDir
+		elseif newDir == 2 then
+			turtle.turnRight()
+			dir = newDir
+		elseif newDir == 3 then
+			turtle.turnRight()
+			turtle.turnRight()
+			dir = newDir
+		else
+			return true
+		end
+	elseif dir == 2 then
+		if newDir == 0 then
+			turtle.turnLeft()
+			turtle.turnLeft()
+			dir = newDir
+		elseif newDir == 1 then
+			turtle.turnLeft()
+			dir = newDir
+		elseif newDir == 3 then
+			turtle.turnRight()
+			dir = newDir
+		else
+			return true
+		end
+	elseif dir == 3 then
+		if newDir == 0 then
+			turtle.turnRight()
+			dir = newDir
+		elseif newDir == 1 then
+			turtle.turnRight()
+			turtle.turnRight()
+			dir = newDir
+		elseif newDir == 2 then
+			turtle.turnLeft()
+			dir = newDir
+		else
+			return true
+		end
+	else
+		return false
+	end
+end
+function continue()
+	term.clear()
+	term.setCursorPos(1,1)
+	print("Continuing...")
+	turn(0)
+	for j = 2,prevYPos do
+		tryUp(false, false)
+	end
+	for x = 1,prevZPos do
+		tryForward()
+	end
+	turn(prevDir)
+	setPrevPos = true
+end
+function toStart(why)
+	if setPrevPos then
+		setPrevPos = false
+		prevZPos = zPos
+		prevYPos = yPos
+		prevDir = dir
+	end
+	print("Returning to start...")
+	turn(2)
+	for m = 1,zPos do
+		tryForward(false, true)
+	end
+	for i = 2,yPos do
+		tryDown(false, true)
+	end
+	if why == "fuel" then
+		local function isFuel()
+			checkNext = true
+			for k = 2,16 do
+				if turtle.getItemCount(k) > 0 and checkNext then
+					turtle.select(k)
+					if turtle.refuel(1) then
+						checkNext = false
+						turtle.select(1)
+						return true
+					end
+				end
+				if k == 16 and checkNext then
+					turtle.select(1)
+					return false
+				end
+			end
+		end
+		while not isFuel() do
+			term.clear()
+			term.setCursorPos(1,1)
+			print("Add more fuel to continue...")
+			os.pullEvent("turtle_inventory")
+		end
+		continue()
+	elseif why == "noBlocks" then
+		while turtle.getItemCount(1) < 1 do
+			term.clear()
+			term.setCursorPos(1,1)
+			print("Add more blocks to continue...")
+			os.pullEvent("turtle_inventory")
+		end
+		continue()
+	elseif done then
+		shell.run("doneWithDig", "wall")
+	end
+end
+function refuel(atStart)
+	if turtle.getFuelLevel() <= zPos + yPos then
+		for n = 9,16 do
+			if turtle.getItemCount(n) > 0 then
+				turtle.select(n)
+				if turtle.refuel(1) then
+					return true
+				end
+			end
+		end
+		if not atStart then
+			toStart("fuel")
+		end
+		return false
+	end
+	return true
+end
+function checkInv()
+	blocks = false
+	for u = 1,8 do
+		if turtle.getItemCount(u) > 0 then
+			turtle.select(u)
+			if turtle.getItemCount(8) > 0 then
+				if turtle.compareTo(8) then
+					blocks = true
+					break
+				end
+			end
+		end
+	end
+	if not blocks then
+		toStart("noBlocks")
+	end
+	return true
+end
+function tryForward(retry, skipFuelCheck)
+	if not skipFuelCheck then
+		refuel(false)
+	end
+	if not turtle.forward() then
+		if not turtle.detect() then
+			if not retry then
+				print("Something got in my way. Waiting for it to move.")
+			end
+			sleep(0.5)
+			tryForward(true, false)
+		else
+			turtle.dig()
+			tryForward(true, false)
+		end
+	else
+		if dir == 0 then
+			zPos = zPos + 1
+		elseif dir == 2 then
+			zPos = zPos - 1
+		end
+		return true
+	end
+end
+function tryDown(retry, skipFuelCheck)
+	if not skipFuelCheck then
+		refuel(false)
+	end
+	if not turtle.down() then
+		if not turtle.detectDown() then
+			if not retry then
+				print("Something got in my way. Waiting for it to move.")
+			end
+			sleep(0.5)
+			tryDown(true, false)
+		else
+			turtle.digDown()
+			tryDown(true, false)
+		end
+	else
+		yPos = yPos - 1
+		return true
+	end
+end
+function tryUp(retry, skipFuelCheck)
+	if not skipFuelCheck then
+		refuel(false)
+	end
+	if not turtle.up() then
+		if not turtle.detectUp() then
+			if not retry then
+				print("Something got in my way. Waiting for it to move.")
+			end
+			sleep(0.5)
+			tryUp(true, false)
+		else
+			turtle.digUp()
+			tryUp(true, false)
+		end
+	else
+		yPos = yPos + 1
+		return true
+	end
+end
+function tryPlace(retry)
+	checkInv()
+	if not turtle.placeDown() then
+		if not turtle.detectDown() then
+			if not retry then
+				print("Something got in my way. Waiting for it to move.")
+			end
+			sleep(0.5)
+			tryPlace(true)
+		else
+			turtle.digDown()
+			tryPlace(true)
+		end
+	end
+	return true
+end
+function buildWall()
+	print("Building wall...")
+	tryUp(false,false)
+	if style == "standard" then
+		local function up()
+			if yPos > height then
+				done = true
+				toStart("done")
+			end
+			tryUp(false,false)
+			if dir == 0 then
+				turn(2)
+			else
+				turn(0)
+			end
+			return
+		end
+		local function row()
+			for l = 1,length do
+				tryPlace(false)
+				if l < length then
+					tryForward(false,false)
+				end
+			end
+			up()
+			row()
+		end
+		row()
+	elseif style == "castle" then
+		print("Enter crenellation interval:")
+		interval = read()
+		interval = interval + 1 - 1
+		while interval < 1 do
+			term.clear()
+			term.setCursorPos(1,1)
+			print("Invalid entry.")
+			print("Interval must be positive!")
+			print("Enter crenellation interval:")
+			interval = read()
+			interval = interval + 1 - 1
+		end
+		local function makeCrenellation()
+			print("Making battlements...")
+			count = interval
+			placeBlock = true
+			for o = 1,length do
+				if count < 1 then
+					count = interval
+					placeBlock = not placeBlock
+				end
+				count = count - 1
+				if placeBlock then
+					tryPlace(false)
+				end
+				if o < length then
+				tryForward(false,false)
+				end
+			end
+			done = true
+			toStart("done")
+		end
+		local function goUp()
+			tryUp(false,false)
+			if dir == 0 then
+				turn(2)
+			else
+				turn(0)
+			end
+			if yPos > height then
+				makeCrenellation()
+			end
+			return
+		end
+		local function base()
+			for l = 1,length do
+				tryPlace(false)
+				if l < length then
+					tryForward(false,false)
+				end
+			end
+			goUp()
+			base()
+		end
+		base()
+	elseif style == "vaulted" then
+		vaultNum = length
+		local function vault()
+			vaultNum = vaultNum - 2
+			tryForward(false,false)
+			for w = 1,vaultNum do
+				tryPlace(false)
+				if w < vaultNum then
+					tryForward(false,false)
+				end
+			end
+			if length % 2 == 0 then
+				if vaultNum == 2 then
+					done = true
+					toStart("done")
+				end
+			else
+				if vaultNum == 1 then
+					done = true
+					toStart("done")
+				end
+			end
+			tryUp(false,false)
+			if dir == 0 then
+				turn(2)
+			else
+				turn(0)
+			end
+				vault()
+		end
+		local function goUpOne()
+			tryUp(false,false)
+			if dir == 0 then
+				turn(2)
+			else
+				turn(0)
+			end
+			if yPos > (height + 1) then
+				vault()
+			end
+			return
+		end
+		local function buildBase()
+			for l = 1,length do
+				tryPlace(false)
+				if l < length then
+					tryForward(false,false)
+				end
+			end
+			goUpOne()
+			buildBase()
+		end
+		buildBase()
+
+	end
+end
+buildWall()

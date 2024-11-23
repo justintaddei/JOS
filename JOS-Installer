@@ -1,0 +1,120 @@
+term.setBackgroundColor(colors.white)
+term.setTextColor(colors.black)
+term.clear()
+term.setCursorPos(1,1)
+
+shell.run("pastebin", "get", "SDyX09W1", "startup")
+shell.run("mkdir", "JOS")
+shell.run("cd", "JOS")
+shell.run("pastebin", "get", "wA4Ezn1u", "backgroundWolf")
+shell.run("pastebin", "get", "UGYrCBzT", "backgroundJOS")
+shell.run("pastebin", "get", "00ZFczEE", ".go")
+shell.run("pastebin", "get", "9vrF5pKx", ".hole")
+shell.run("pastebin", "get", "GGmX0k5M", ".wall")
+shell.run("pastebin", "get", "Qt35dnJK", ".fuelCheck")
+shell.run("pastebin", "get", "ta47K6Hm", ".floor")
+shell.run("pastebin", "get", "xM0FSjbw", ".dig")
+shell.run("pastebin", "get", "6pazmRzF", "wall")
+shell.run("pastebin", "get", "iH7FbNJ7", "myBGImage")
+shell.run("pastebin", "get", "vypKgVn6", "move")
+shell.run("pastebin", "get", "2yAacPds", "luaIcon")
+shell.run("pastebin", "get", "8gYK7VnM", "jos")
+shell.run("pastebin", "get", "sEHU8XNT", "hole")
+shell.run("pastebin", "get", "eYJUF8mT", "floor")
+shell.run("pastebin", "get", "M6e6apx3", "doneWithDig")
+shell.run("pastebin", "get", "Rt3nUnEv", "dig")
+
+term.clear()
+w,h = term.getSize()
+term.setCursorPos(w/2 - 6, 5)
+print("Installing JOS")
+term.setBackgroundColor(colors.black)
+
+term.setCursorPos((w/2) - 10, 8)
+print(" ")
+sleep(0.2)
+
+term.setCursorPos((w/2) - 10, 8)
+print("  ")
+sleep(0.2)
+
+term.setCursorPos((w/2) - 10, 8)
+print("   ")
+sleep(0.2)
+
+term.setCursorPos((w/2) - 10, 8)
+print("    ")
+sleep(0.2)
+
+term.setCursorPos((w/2) - 10, 8)
+print("     ")
+sleep(0.2)
+
+term.setCursorPos((w/2) - 10, 8)
+print("      ")
+sleep(0.2)
+
+term.setCursorPos((w/2) - 10, 8)
+print("       ")
+sleep(0.2)
+
+term.setCursorPos((w/2) - 10, 8)
+print("        ")
+sleep(0.2)
+
+term.setCursorPos((w/2) - 10, 8)
+print("         ")
+sleep(0.2)
+
+term.setCursorPos((w/2) - 10, 8)
+print("          ")
+sleep(0.2)
+
+term.setCursorPos((w/2) - 10, 8)
+print("           ")
+sleep(0.2)
+
+term.setCursorPos((w/2) - 10, 8)
+print("            ")
+sleep(0.2)
+
+term.setCursorPos((w/2) - 10, 8)
+print("             ")
+sleep(0.2)
+
+term.setCursorPos((w/2) - 10, 8)
+print("              ")
+sleep(0.2)
+
+term.setCursorPos((w/2) - 10, 8)
+print("               ")
+sleep(0.2)
+
+term.setCursorPos((w/2) - 10, 8)
+print("                ")
+sleep(0.2)
+
+term.setCursorPos((w/2) - 10, 8)
+print("                 ")
+sleep(0.2)
+
+term.setCursorPos((w/2) - 10, 8)
+print("                  ")
+sleep(0.2)
+
+term.setCursorPos((w/2) - 10, 8)
+print("                   ")
+sleep(0.2)
+
+term.setCursorPos((w/2) - 10, 8)
+print("                    ")
+sleep(0.2)
+
+term.setCursorPos((w/2) - 10, 8)
+print("                     ")
+sleep(0.2)
+
+term.setCursorPos((w/2) - 10, 8)
+print("                      ")
+sleep(1)
+shell.run("jos")

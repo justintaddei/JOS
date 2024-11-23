@@ -1,0 +1,1054 @@
+-- Loading
+tArgs = {...}
+load0 = "[    ]"
+load1 = "[-   ]"
+load2 = "[--  ]"
+load3 = "[--- ]"
+load4 = "[----]"
+if term.isColor() and tArgs[1] ~= "skipLoad" then for i = 0,4 do
+	term.setBackgroundColor(colors.white)
+	term.setTextColor(colors.red)
+	term.clear()
+	w, h = term.getSize()
+	term.setCursorPos(w/2 - string.len(load1)/2, h/2)
+	if i == 0 then
+		print(load0)
+	elseif i == 1 then
+		print(load1)
+	elseif i == 2 then
+		print(load2)
+	elseif i == 3 then
+		print(load3)
+	else
+		term.setTextColor(colors.lime)
+		print(load4)
+		sleep(0.5)
+	end
+	sleep(0.17)
+end end
+
+-- Justin Operating System (JOS)
+
+-- Settings
+bgImage = "backgroundJOS"
+menuColor = 2
+taskColor = 128
+appColor = 16384
+textColor = 32768
+-- End of settings
+
+-- Write to file
+
+function exists(path)
+	local file = assert(io.open(path, "r"))
+	if file ~= nil then
+		file:close()
+		return true
+	end
+
+	return false
+end
+function imgExists(path)
+	if fs.exists("JOS/"..path) then
+		return true
+	else
+		return false
+	end
+end
+function getTable(path)
+	if exists(path) then
+		local file = io.open(path, "r")
+		local lines = {}
+		local i = 1
+		local line = file:read("*l")
+		while line ~= nil do
+			lines[i] = line
+			line = file:read("*l")
+			i = i + 1
+		end
+		file:close()
+		return lines
+	end
+	return {}
+end
+function fwrite(path, text)
+	local file = assert(io.open(path, "w"))
+	file:write(text)
+	file:close()
+end
+function fwriteFromTable(path, t)
+	local text = ""
+	for _, line in pairs(t) do
+		text = text..line.."\n"
+	end
+	fwrite(path, text)
+end
+function replaceLine(path, n, text)
+	local lines = getTable(path)
+	lines[n] = text
+	fwriteFromTable(path, lines)
+end
+
+-- end
+customBG = false
+menu = 0
+place = 0
+W, H = term.getSize()
+
+function desktop()
+	term.setCursorPos(1,1)
+	term.setBackgroundColor(colors.white)
+	term.clear()
+	bg = paintutils.loadImage("JOS/"..bgImage)
+	paintutils.drawImage(bg, 1, 2)
+	taskbar()
+end
+
+function apps()
+	local hole = paintutils.loadImage("JOS/.hole")
+	local dig = paintutils.loadImage("JOS/.dig")
+	local go = paintutils.loadImage("JOS/.go")
+	local lua = paintutils.loadImage("JOS/luaIcon")
+	local floor = paintutils.loadImage("JOS/.floor")
+	local fCheck = paintutils.loadImage("JOS/.fuelCheck")
+	local wall = paintutils.loadImage("JOS/.wall")
+	term.setCursorPos(1,1)
+	term.setBackgroundColor(appColor)
+	term.setTextColor(textColor)
+	term.clear()
+	taskbar()
+	paintutils.drawImage(hole, 3, 3)
+	paintutils.drawImage(wall, 3, 8)
+	paintutils.drawImage(dig, 9, 3)
+	paintutils.drawImage(go, 15, 3)
+	paintutils.drawImage(fCheck, 21, 3)
+	paintutils.drawImage(lua, 27, 3)
+	paintutils.drawImage(floor, 34, 3)
+end
+
+function showFuelLevel()
+	local fLevel = "Fuel level is: "..turtle.getFuelLevel()
+	term.setBackgroundColor(colors.black)
+	term.setTextColor(colors.orange)
+	term.clear()
+	taskbar()
+	term.setBackgroundColor(colors.black)
+	term.setTextColor(colors.orange)
+	term.setCursorPos(W/2 - 8, H/2)
+	print(fLevel)
+	sleep(3)
+	apps()
+end
+
+function settings()
+	customBG = false
+	term.setBackgroundColor(256)
+	term.clear()
+	taskbar()
+	term.setBackgroundColor(taskColor)
+	term.setTextColor(textColor)
+	term.setCursorPos(W/2 - 4, 1)
+	print("Settings")
+	if bgImage == "backgroundJOS" then
+		term.setBackgroundColor(colors.lime)
+	elseif bgImage == "backgroundWolf" then
+		term.setBackgroundColor(colors.pink)
+	else
+		term.setBackgroundColor(colors.lightBlue)
+		customBG = true
+	end
+	term.setCursorPos(3,4)
+	if not customBG then
+		print("Background: JOS Wolf Custom")
+	elseif customBG then
+		term.setCursorPos(3,3)
+		print(" Clear | Edit ")
+		term.setCursorPos(3,4)
+		print("Background: ".. bgImage .." ")
+	end
+	-- Taskbar color
+	term.setBackgroundColor(256)
+	term.setCursorPos(3, 6)
+	print("Taskbar color:")
+	term.setCursorPos(18, 6)
+	term.setBackgroundColor(1)
+	print(" ")
+	term.setCursorPos(19, 6)
+	term.setBackgroundColor(2)
+	print(" ")
+	term.setCursorPos(20, 6)
+	term.setBackgroundColor(4)
+	print(" ")
+	term.setCursorPos(21, 6)
+	term.setBackgroundColor(8)
+	print(" ")
+	term.setCursorPos(22, 6)
+	term.setBackgroundColor(16)
+	print(" ")
+	term.setCursorPos(23, 6)
+	term.setBackgroundColor(32)
+	print(" ")
+	term.setCursorPos(24, 6)
+	term.setBackgroundColor(64)
+	print(" ")
+	term.setCursorPos(25, 6)
+	term.setBackgroundColor(128)
+	print(" ")
+	term.setCursorPos(26, 6)
+	term.setBackgroundColor(256)
+	print(" ")
+	term.setCursorPos(27, 6)
+	term.setBackgroundColor(512)
+	print(" ")
+	term.setCursorPos(28, 6)
+	term.setBackgroundColor(1024)
+	print(" ")
+	term.setCursorPos(29, 6)
+	term.setBackgroundColor(2048)
+	print(" ")
+	term.setCursorPos(30, 6)
+	term.setBackgroundColor(4096)
+	print(" ")
+	term.setCursorPos(31, 6)
+	term.setBackgroundColor(8192)
+	print(" ")
+	term.setCursorPos(32, 6)
+	term.setBackgroundColor(16384)
+	print(" ")
+	term.setCursorPos(33, 6)
+	term.setBackgroundColor(32768)
+	print(" ")
+	-- menu color
+	term.setBackgroundColor(256)
+	term.setCursorPos(3, 8)
+	print("Menu color:")
+	term.setCursorPos(18, 8)
+	term.setBackgroundColor(1)
+	print(" ")
+	term.setCursorPos(19, 8)
+	term.setBackgroundColor(2)
+	print(" ")
+	term.setCursorPos(20, 8)
+	term.setBackgroundColor(4)
+	print(" ")
+	term.setCursorPos(21, 8)
+	term.setBackgroundColor(8)
+	print(" ")
+	term.setCursorPos(22, 8)
+	term.setBackgroundColor(16)
+	print(" ")
+	term.setCursorPos(23, 8)
+	term.setBackgroundColor(32)
+	print(" ")
+	term.setCursorPos(24, 8)
+	term.setBackgroundColor(64)
+	print(" ")
+	term.setCursorPos(25, 8)
+	term.setBackgroundColor(128)
+	print(" ")
+	term.setCursorPos(26, 8)
+	term.setBackgroundColor(256)
+	print(" ")
+	term.setCursorPos(27, 8)
+	term.setBackgroundColor(512)
+	print(" ")
+	term.setCursorPos(28, 8)
+	term.setBackgroundColor(1024)
+	print(" ")
+	term.setCursorPos(29, 8)
+	term.setBackgroundColor(2048)
+	print(" ")
+	term.setCursorPos(30, 8)
+	term.setBackgroundColor(4096)
+	print(" ")
+	term.setCursorPos(31, 8)
+	term.setBackgroundColor(8192)
+	print(" ")
+	term.setCursorPos(32, 8)
+	term.setBackgroundColor(16384)
+	print(" ")
+	term.setCursorPos(33, 8)
+	term.setBackgroundColor(32768)
+	print(" ")
+	-- App screen BG color
+	term.setBackgroundColor(256)
+	term.setCursorPos(3, 10)
+	print("App screen BG:")
+	term.setCursorPos(18, 10)
+	term.setBackgroundColor(1)
+	print(" ")
+	term.setCursorPos(19, 10)
+	term.setBackgroundColor(2)
+	print(" ")
+	term.setCursorPos(20, 10)
+	term.setBackgroundColor(4)
+	print(" ")
+	term.setCursorPos(21, 10)
+	term.setBackgroundColor(8)
+	print(" ")
+	term.setCursorPos(22, 10)
+	term.setBackgroundColor(16)
+	print(" ")
+	term.setCursorPos(23, 10)
+	term.setBackgroundColor(32)
+	print(" ")
+	term.setCursorPos(24, 10)
+	term.setBackgroundColor(64)
+	print(" ")
+	term.setCursorPos(25, 10)
+	term.setBackgroundColor(128)
+	print(" ")
+	term.setCursorPos(26, 10)
+	term.setBackgroundColor(256)
+	print(" ")
+	term.setCursorPos(27, 10)
+	term.setBackgroundColor(512)
+	print(" ")
+	term.setCursorPos(28, 10)
+	term.setBackgroundColor(1024)
+	print(" ")
+	term.setCursorPos(29, 10)
+	term.setBackgroundColor(2048)
+	print(" ")
+	term.setCursorPos(30, 10)
+	term.setBackgroundColor(4096)
+	print(" ")
+	term.setCursorPos(31, 10)
+	term.setBackgroundColor(8192)
+	print(" ")
+	term.setCursorPos(32, 10)
+	term.setBackgroundColor(16384)
+	print(" ")
+	term.setCursorPos(33, 10)
+	term.setBackgroundColor(32768)
+	print(" ")
+	term.setBackgroundColor(256)
+	-- Text color
+	term.setBackgroundColor(256)
+	term.setCursorPos(3, 12)
+	print("Text color:")
+	term.setCursorPos(18, 12)
+	term.setBackgroundColor(1)
+	print(" ")
+	term.setCursorPos(19, 12)
+	term.setBackgroundColor(2)
+	print(" ")
+	term.setCursorPos(20, 12)
+	term.setBackgroundColor(4)
+	print(" ")
+	term.setCursorPos(21, 12)
+	term.setBackgroundColor(8)
+	print(" ")
+	term.setCursorPos(22, 12)
+	term.setBackgroundColor(16)
+	print(" ")
+	term.setCursorPos(23, 12)
+	term.setBackgroundColor(32)
+	print(" ")
+	term.setCursorPos(24, 12)
+	term.setBackgroundColor(64)
+	print(" ")
+	term.setCursorPos(25, 12)
+	term.setBackgroundColor(128)
+	print(" ")
+	term.setCursorPos(26, 12)
+	term.setBackgroundColor(256)
+	print(" ")
+	term.setCursorPos(27, 12)
+	term.setBackgroundColor(512)
+	print(" ")
+	term.setCursorPos(28, 12)
+	term.setBackgroundColor(1024)
+	print(" ")
+	term.setCursorPos(29, 12)
+	term.setBackgroundColor(2048)
+	print(" ")
+	term.setCursorPos(30, 12)
+	term.setBackgroundColor(4096)
+	print(" ")
+	term.setCursorPos(31, 12)
+	term.setBackgroundColor(8192)
+	print(" ")
+	term.setCursorPos(32, 12)
+	term.setBackgroundColor(16384)
+	print(" ")
+	term.setCursorPos(33, 12)
+	term.setBackgroundColor(32768)
+	print(" ")
+	term.setBackgroundColor(256)
+end
+
+function taskbar()
+	local day = os.day()
+	local date = "Day "..day
+	local clockPos = W - string.len(date) - 1
+	term.setCursorPos(1,1)
+	term.setBackgroundColor(taskColor)
+	term.clearLine()
+	term.setTextColor(textColor)
+	term.setBackgroundColor(menuColor)
+	print(" @ ")
+	term.setCursorPos(5,1)
+	term.setTextColor(menuColor)
+	term.setBackgroundColor(taskColor)
+	print("Apps")
+	term.setCursorPos(clockPos, 1)
+	print(date)
+end
+
+function startmenu()
+	term.setCursorPos(1,2)
+	term.setTextColor(textColor)
+	term.setBackgroundColor(menuColor)
+	print("          ")
+	print(" Shutdown ")
+	print("          ")
+	print(" Restart  ")
+	print("          ")
+	if place == 0 then
+		print(" Apps     ")
+	else
+		print(" Desktop  ")
+	end
+	print("          ")
+	print(" More   > ")
+	print("          ")
+end
+
+function more()
+	term.setCursorPos(11,4)
+	print("          ")
+	term.setCursorPos(11,5)
+	print(" Exit JOS ")
+	term.setCursorPos(11,6)
+	print("          ")
+	term.setCursorPos(11,7)
+	print(" Settings ")
+	term.setCursorPos(11,8)
+	print("          ")
+	term.setCursorPos(11,9)
+	print(" About    ")
+	term.setCursorPos(11,10)
+	print("          ")
+end
+
+ver = "1.3"
+name = "JOS, Justin Operating System"
+new = "Added Support for Basic Computers (JOS-Lite)"
+function about()
+	local w, h = term.getSize()
+	if isBasic then
+		term.setCursorPos(1,1)
+		term.clear()
+		term.setCursorPos(2,2)
+		print("By, Justin Taddei")
+		term.setCursorPos(2,4)
+		print("Name: "..name)
+		term.setCursorPos(2,6)
+		print("Version: "..ver)
+		term.setCursorPos(2,8)
+		print("What's new: "..new)
+		term.setCursorPos(2, h)
+		print("Press any key to exit.")
+		os.pullEvent()
+		basic(true)
+	else
+		term.setBackgroundColor(128)
+		term.setTextColor(colors.orange)
+		term.setCursorPos(1,1)
+		term.clear()
+		term.setCursorPos(2,2)
+		print("By, Justin Taddei")
+		term.setCursorPos(2,4)
+		print("Name: "..name)
+		term.setCursorPos(2,6)
+		print("Version: "..ver)
+		term.setCursorPos(2,8)
+		print("What's new:")
+		term.setCursorPos(2,9)
+		print(new)
+		term.setCursorPos(w - 5, h - 1)
+		term.setBackgroundColor(colors.orange)
+		term.setTextColor(colors.black)
+		print(" OK ")
+	end
+end
+
+function basic(bypass)
+	local w, h = term.getSize()
+	local branding = "By, Justin Taddei     www.justintaddei.com"
+	term.setCursorPos(w/2 - 8,h/2)
+	term.setTextColor(colors.black)
+	term.setBackgroundColor(colors.white)
+	term.clear()
+	if not bypass then
+	print("Running JOS-Lite")
+	sleep(1.5)
+	end
+	term.clear()
+	term.setCursorPos(1,h)
+	print(branding)
+	term.setCursorPos(1,1)
+	print(" JOS      by, Justin Taddei")
+	term.setCursorPos(1,3)
+	print("Programs: hole, tunnle, floor, wall, move, fuel-level, and lua.")
+	print("Options: exit, reboot, shutdown, about")
+	term.setCursorPos(1,6)
+	print("Enter program or option:")
+	print("JOS-Lite>")
+	term.setCursorPos(11,7)
+	prog = read()
+	if prog ~= nil then
+		if prog == "fuel-level" then
+			local fl = "Fuel Level: "..turtle.getFuelLevel()
+			term.setCursorPos(1,1)
+			term.setBackgroundColor(colors.black)
+			term.setTextColor(colors.white)
+			term.clear()
+			term.setCursorPos(w/2 - string.len(fl)/2, h/2)
+			print(fl)
+			sleep(4)
+			basic()
+		elseif prog == "exit" then
+			term.setCursorPos(1,1)
+			term.setBackgroundColor(colors.black)
+			term.setTextColor(colors.white)
+			term.clear()
+			exit = true
+		elseif prog == "tunnle" then
+			shell.run("dig")
+		elseif prog == "about" then
+			about()
+		else
+			if prog == "lua" then
+				term.setCursorPos(1,1)
+				term.setBackgroundColor(colors.black)
+				term.setTextColor(colors.white)
+				term.clear()
+			end
+			shell.run(prog)
+			sleep(1.3)
+			basic(true)
+		end
+	else
+		print("Enter program name first!")
+		sleep(2)
+		basic()
+	end
+end
+
+function restart()
+	load5 = "See you soon!"
+	load4 = "[    ]"
+	load3 = "[-   ]"
+	load2 = "[--  ]"
+	load1 = "[--- ]"
+	load0 = "[----]"
+	for i = 0,5 do
+		term.setBackgroundColor(colors.white)
+		term.setTextColor(colors.red)
+		term.clear()
+		w, h = term.getSize()
+		term.setCursorPos(w/2 - string.len(load1)/2, h/2)
+		if i == 0 then
+			term.setTextColor(colors.lime)
+			print(load0)
+		elseif i == 1 then
+			print(load1)
+		elseif i == 2 then
+			print(load2)
+		elseif i == 3 then
+			print(load3)
+		elseif i == 5 then
+			term.setTextColor(colors.black)
+			term.setCursorPos(w/2 - string.len(load5)/2, h/2)
+			print(load5)
+			sleep(1.5)
+		else
+			print(load4)
+		end
+		sleep(0.17)
+	end
+	os.reboot()
+end
+
+function shutdown()
+	load5 = "Goodbye"
+	load4 = "[    ]"
+	load3 = "[-   ]"
+	load2 = "[--  ]"
+	load1 = "[--- ]"
+	load0 = "[----]"
+	for i = 0,5 do
+		term.setBackgroundColor(colors.white)
+		term.setTextColor(colors.red)
+		term.clear()
+		w, h = term.getSize()
+		term.setCursorPos(w/2 - string.len(load1)/2, h/2)
+		if i == 0 then
+			term.setTextColor(colors.lime)
+			print(load0)
+		elseif i == 1 then
+			print(load1)
+		elseif i == 2 then
+			print(load2)
+		elseif i == 3 then
+			print(load3)
+		elseif i == 5 then
+			term.setTextColor(colors.black)
+			term.setCursorPos(w/2 - string.len(load5)/2, h/2)
+			print(load5)
+			sleep(1.5)
+		else
+			print(load4)
+		end
+		sleep(0.17)
+	end
+	os.shutdown()
+end
+isBasic = false
+exit = false
+openMore = true
+submenu = 0
+if term.isColor() then
+	desktop()
+else
+	isBasic = true
+	basic()
+end
+if not isBasic then
+while true and not exit do
+	event, button, x, y = os.pullEventRaw()
+	if event == "mouse_click" and menu == 0 and place == 0 then
+		if button == 1 then
+			if x >= 1 and x <= 3 and y == 1 then
+				startmenu()
+				menu = 1
+				submenu = 0
+			elseif x >= 5 and x <= 8 and y == 1 then
+				menu = 0
+				submenu = 0
+				place = 1
+				apps()
+			end
+		end
+	elseif event == "mouse_click" and menu == 1 then
+		if button == 1 then
+			if x >= 1 and x <= 3 and y == 1 then
+				if place == 0 then
+					desktop()
+				elseif place == 1 then
+					apps()
+				elseif place == 2 then
+					settings()
+				end
+				menu = 0
+				submenu = 0
+			elseif x >= 1 and x <= 10 and y == 3 then
+				shutdown()
+			elseif x >= 1 and x <= 10 and y == 5 then
+				restart()
+			elseif x >= 1 and x <= 10 and y == 7 then
+				if place ~= 1 and place ~= 2 then
+					place = 1
+					menu = 0
+					submenu = 0
+					apps()
+				else
+					place = 0
+					menu = 0
+					submenu = 0
+					desktop()
+				end
+			elseif x >= 1 and x <= 10 and y == 9 then
+				if not openMore then
+					submenu = 0
+					openMore = true
+					if place == 0 then
+						desktop()
+					elseif place == 1 then
+						apps()
+					elseif place == 2 then
+						settings()
+					end
+					startmenu()
+				else
+					openMore = false
+					submenu = 1
+					more()
+				end
+			elseif x >= 12 and x <= 19 and y == 5 and submenu == 1 then
+				exit = true
+				term.setCursorPos(1,1)
+				term.setBackgroundColor(colors.black)
+				term.setTextColor(colors.white)
+				term.clear()
+			elseif x >= 12 and x <= 19 and y == 7 and submenu == 1 then
+				place = 2
+				menu = 0
+				submenu = 0
+				settings()
+			elseif x >= 12 and x <= 19 and y == 9 and submenu == 1 then
+				place = 3
+				menu = 0
+				submenu = 0
+				about()
+			end
+		end
+	elseif event == "mouse_click" and menu == 0 and place == 3 and button == 1 and x >= w - 5 and x <= w - 1 and y == h - 1 then
+			place = 0
+			menu = 0
+			submenu = 0
+			desktop()
+	elseif event == "mouse_click" and menu == 0 and place == 1 then
+		if button == 1 then
+			if x >= 1 and x <= 3 and y == 1 then
+				startmenu()
+				menu = 1
+			elseif x >= 5 and x <= 8 and y == 1 then
+				menu = 0
+				place = 1
+				apps()
+			elseif x >= 3 and x <= 7 and y >= 3 and y <= 6 then
+				shell.run("hole")
+			elseif x >= 3 and x <= 7 and y >= 8 and y <= 11 then
+				shell.run("wall")
+			elseif x >= 9 and x <= 13 and y >= 3 and y <= 6 then
+				shell.run("dig")
+			elseif x >= 15 and x <= 19 and y >= 3 and y <= 6 then
+				shell.run("move")
+			elseif x >= 21 and x <= 25 and y >= 3 and y <= 6 then
+				showFuelLevel()
+			elseif x >= 27 and x <= 31 and y >= 3 and y <= 6 then
+				term.setTextColor(colors.white)
+				term.setBackgroundColor(colors.black)
+				term.clear()
+				term.setCursorPos(1,1)
+				shell.run("lua")
+				apps()
+			elseif x >= 34 and x <= 38 and y >= 3 and y <= 6 then
+				shell.run("floor")
+			end
+		end
+	elseif event == "mouse_click" and menu == 0 and place == 2 then
+		if button == 1 then
+			if x >= 1 and x <= 3 and y == 1 then
+				startmenu()
+				menu = 1
+			elseif x >= 5 and x <= 8 and y == 1 then
+				menu = 0
+				place = 1
+				apps()
+			-- Color settings
+			-- Taskbar
+			elseif x == 18 and y == 6 then
+				taskColor = 1
+				replaceLine("JOS/jos", 35, 'taskColor = 1')
+				settings()
+			elseif x == 19 and y == 6 then
+				taskColor = 2
+				replaceLine("JOS/jos", 35, 'taskColor = 2')
+				settings()
+			elseif x == 20 and y == 6 then
+				taskColor = 4
+				replaceLine("JOS/jos", 35, 'taskColor = 4')
+				settings()
+			elseif x == 21 and y == 6 then
+				taskColor = 8
+				replaceLine("JOS/jos", 35, 'taskColor = 8')
+				settings()
+			elseif x == 22 and y == 6 then
+				taskColor = 16
+				replaceLine("JOS/jos", 35, 'taskColor = 16')
+				settings()
+			elseif x == 23 and y == 6 then
+				taskColor = 32
+				replaceLine("JOS/jos", 35, 'taskColor = 32')
+				settings()
+			elseif x == 24 and y == 6 then
+				taskColor = 64
+				replaceLine("JOS/jos", 35, 'taskColor = 64')
+				settings()
+			elseif x == 25 and y == 6 then
+				taskColor = 128
+				replaceLine("JOS/jos", 35, 'taskColor = 128')
+				settings()
+			elseif x == 26 and y == 6 then
+				taskColor = 256
+				replaceLine("JOS/jos", 35, 'taskColor = 256')
+				settings()
+			elseif x == 27 and y == 6 then
+				taskColor = 512
+				replaceLine("JOS/jos", 35, 'taskColor = 512')
+				settings()
+			elseif x == 28 and y == 6 then
+				taskColor = 1024
+				replaceLine("JOS/jos", 35, 'taskColor = 1024')
+				settings()
+			elseif x == 29 and y == 6 then
+				taskColor = 2048
+				replaceLine("JOS/jos", 35, 'taskColor = 2048')
+				settings()
+			elseif x == 30 and y == 6 then
+				taskColor = 4096
+				replaceLine("JOS/jos", 35, 'taskColor = 4096')
+				settings()
+			elseif x == 31 and y == 6 then
+				taskColor = 8192
+				replaceLine("JOS/jos", 35, 'taskColor = 8192')
+				settings()
+			elseif x == 32 and y == 6 then
+				taskColor = 16384
+				replaceLine("JOS/jos", 35, 'taskColor = 16384')
+				settings()
+			elseif x == 33 and y == 6 then
+				taskColor = 32768
+				replaceLine("JOS/jos", 35, 'taskColor = 32768')
+				settings()
+			-- Menu
+			elseif x == 18 and y == 8 then
+				menuColor = 1
+				replaceLine("JOS/jos", 34, 'menuColor = 1')
+				settings()
+			elseif x == 19 and y == 8 then
+				menuColor = 2
+				replaceLine("JOS/jos", 34, 'menuColor = 2')
+				settings()
+			elseif x == 20 and y == 8 then
+				menuColor = 4
+				replaceLine("JOS/jos", 34, 'menuColor = 4')
+				settings()
+			elseif x == 21 and y == 8 then
+				menuColor = 8
+				replaceLine("JOS/jos", 34, 'menuColor = 8')
+				settings()
+			elseif x == 22 and y == 8 then
+				menuColor = 16
+				replaceLine("JOS/jos", 34, 'menuColor = 16')
+				settings()
+			elseif x == 23 and y == 8 then
+				menuColor = 32
+				replaceLine("JOS/jos", 34, 'menuColor = 32')
+				settings()
+			elseif x == 24 and y == 8 then
+				menuColor = 64
+				replaceLine("JOS/jos", 34, 'menuColor = 64')
+				settings()
+			elseif x == 25 and y == 8 then
+				menuColor = 128
+				replaceLine("JOS/jos", 34, 'menuColor = 128')
+				settings()
+			elseif x == 26 and y == 8 then
+				menuColor = 256
+				replaceLine("JOS/jos", 34, 'menuColor = 256')
+				settings()
+			elseif x == 27 and y == 8 then
+				menuColor = 512
+				replaceLine("JOS/jos", 34, 'menuColor = 512')
+				settings()
+			elseif x == 28 and y == 8 then
+				menuColor = 1024
+				replaceLine("JOS/jos", 34, 'menuColor = 1024')
+				settings()
+			elseif x == 29 and y == 8 then
+				menuColor = 2048
+				replaceLine("JOS/jos", 34, 'menuColor = 2048')
+				settings()
+			elseif x == 30 and y == 8 then
+				menuColor = 4096
+				replaceLine("JOS/jos", 34, 'menuColor = 4096')
+				settings()
+			elseif x == 31 and y == 8 then
+				menuColor = 8192
+				replaceLine("JOS/jos", 34, 'menuColor = 8192')
+				settings()
+			elseif x == 32 and y == 8 then
+				menuColor = 16384
+				replaceLine("JOS/jos", 34, 'menuColor = 16384')
+				settings()
+			elseif x == 33 and y == 8 then
+				menuColor = 32768
+				replaceLine("JOS/jos", 34, 'menuColor = 32768')
+				settings()
+			-- App screen
+			elseif x == 18 and y == 10 then
+				appColor = 1
+				replaceLine("JOS/jos", 36, 'appColor = 1')
+				settings()
+			elseif x == 19 and y == 10 then
+				appColor = 2
+				replaceLine("JOS/jos", 36, 'appColor = 2')
+				settings()
+			elseif x == 20 and y == 10 then
+				appColor = 4
+				replaceLine("JOS/jos", 36, 'appColor = 4')
+				settings()
+			elseif x == 21 and y == 10 then
+				appColor = 8
+				replaceLine("JOS/jos", 36, 'appColor = 8')
+				settings()
+			elseif x == 22 and y == 10 then
+				appColor = 16
+				replaceLine("JOS/jos", 36, 'appColor = 16')
+				settings()
+			elseif x == 23 and y == 10 then
+				appColor = 32
+				replaceLine("JOS/jos", 36, 'appColor = 32')
+				settings()
+			elseif x == 24 and y == 10 then
+				appColor = 64
+				replaceLine("JOS/jos", 36, 'appColor = 64')
+				settings()
+			elseif x == 25 and y == 10 then
+				appColor = 128
+				replaceLine("JOS/jos", 36, 'appColor = 128')
+				settings()
+			elseif x == 26 and y == 10 then
+				appColor = 256
+				replaceLine("JOS/jos", 36, 'appColor = 256')
+				settings()
+			elseif x == 27 and y == 10 then
+				appColor = 512
+				replaceLine("JOS/jos", 36, 'appColor = 512')
+				settings()
+			elseif x == 28 and y == 10 then
+				appColor = 1024
+				replaceLine("JOS/jos", 36, 'appColor = 1024')
+				settings()
+			elseif x == 29 and y == 10 then
+				appColor = 2048
+				replaceLine("JOS/jos", 36, 'appColor = 2048')
+				settings()
+			elseif x == 30 and y == 10 then
+				appColor = 4096
+				replaceLine("JOS/jos", 36, 'appColor = 4096')
+				settings()
+			elseif x == 31 and y == 10 then
+				appColor = 8192
+				replaceLine("JOS/jos", 36, 'appColor = 8192')
+				settings()
+			elseif x == 32 and y == 10 then
+				appColor = 16384
+				replaceLine("JOS/jos", 36, 'appColor = 16384')
+				settings()
+			elseif x == 33 and y == 10 then
+				appColor = 32768
+				replaceLine("JOS/jos", 36, 'appColor = 32768')
+				settings()
+			-- Text color
+			elseif x == 18 and y == 12 then
+				textColor = 1
+				replaceLine("JOS/jos", 37, 'textColor = 1')
+				settings()
+			elseif x == 19 and y == 12 then
+				textColor = 2
+				replaceLine("JOS/jos", 37, 'textColor = 2')
+				settings()
+			elseif x == 20 and y == 12 then
+				textColor = 4
+				replaceLine("JOS/jos", 37, 'textColor = 4')
+				settings()
+			elseif x == 21 and y == 12 then
+				textColor = 8
+				replaceLine("JOS/jos", 37, 'textColor = 8')
+				settings()
+			elseif x == 22 and y == 12 then
+				textColor = 16
+				replaceLine("JOS/jos", 37, 'textColor = 16')
+				settings()
+			elseif x == 23 and y == 12 then
+				textColor = 32
+				replaceLine("JOS/jos", 37, 'textColor = 32')
+				settings()
+			elseif x == 24 and y == 12 then
+				textColor = 64
+				replaceLine("JOS/jos", 37, 'textColor = 64')
+				settings()
+			elseif x == 25 and y == 12 then
+				textColor = 128
+				replaceLine("JOS/jos", 37, 'textColor = 128')
+				settings()
+			elseif x == 26 and y == 12 then
+				textColor = 256
+				replaceLine("JOS/jos", 37, 'textColor = 256')
+				settings()
+			elseif x == 27 and y == 12 then
+				textColor = 512
+				replaceLine("JOS/jos", 37, 'textColor = 512')
+				settings()
+			elseif x == 28 and y == 12 then
+				textColor = 1024
+				replaceLine("JOS/jos", 37, 'textColor = 1024')
+				settings()
+			elseif x == 29 and y == 12 then
+				textColor = 2048
+				replaceLine("JOS/jos", 37, 'textColor = 2048')
+				settings()
+			elseif x == 30 and y == 12 then
+				textColor = 4096
+				replaceLine("JOS/jos", 37, 'textColor = 4096')
+				settings()
+			elseif x == 31 and y == 12 then
+				textColor = 8192
+				replaceLine("JOS/jos", 37, 'textColor = 8192')
+				settings()
+			elseif x == 32 and y == 12 then
+				textColor = 16384
+				replaceLine("JOS/jos", 37, 'textColor = 16384')
+				settings()
+			elseif x == 33 and y == 12 then
+				textColor = 32768
+				replaceLine("JOS/jos", 37, 'textColor = 32768')
+				settings()
+			-- End of color settings
+			elseif x >= 15 and x <= 17 and y == 4 and not customBG then
+				replaceLine("JOS/jos", 33, 'bgImage = "backgroundJOS"')
+				bgImage = "backgroundJOS"
+				settings()
+			elseif x >= 19 and x <= 22 and y == 4 and not customBG then
+				replaceLine("JOS/jos", 33, 'bgImage = "backgroundWolf"')
+				bgImage = "backgroundWolf"
+				settings()
+			elseif x >= 24 and x <= 29 and y == 4 and not customBG then
+				term.setCursorPos(15,5)
+				term.setBackgroundColor(colors.lightBlue)
+				print("               ")
+				term.setCursorPos(15,5)
+				local newImage = read()
+				if imgExists(newImage) then
+				replaceLine("JOS/jos", 33, 'bgImage = "'..newImage .. '"')
+				bgImage = newImage
+				else
+					term.setCursorPos(15,5)
+					term.setBackgroundColor(colors.red)
+					term.setTextColor(colors.black)
+					print(" Image doesn't exist. ")
+					sleep(1.8)
+				end
+				settings()
+			elseif x >= 4 and x <= 8 and y == 3 and customBG then
+				replaceLine("JOS/jos", 33, 'bgImage = "backgroundJOS"')
+				bgImage = "backgroundJOS"
+				settings()
+			elseif x >= 12 and x <= 15 and y == 3 and customBG then
+				term.setCursorPos(15,4)
+				term.setBackgroundColor(colors.lightBlue)
+				print("               ")
+				term.setCursorPos(15,4)
+				local newImage = read()
+				if imgExists(newImage) then
+					replaceLine("JOS/jos", 33, 'bgImage = "'..newImage .. '"')
+					bgImage = newImage
+				else
+					term.setCursorPos(15,4)
+					term.setBackgroundColor(colors.red)
+					term.setTextColor(colors.black)
+					print(" Image doesn't exist. ")
+					sleep(1.8)
+				end
+				settings()
+			end
+		end
+	end
+end
+end

@@ -1,0 +1,99 @@
+-- Moves the turtle
+
+if term.isColor() then
+term.setTextColor(colors.orange)
+term.setBackgroundColor(colors.black)
+end
+term.clear()
+term.setCursorPos(1,1)
+tArgs = {}
+print("Enter direction:")
+tArgs[1] = read()
+print("Enter distance:")
+tArgs[2] = read()
+
+
+local tHandlers = {
+	["fd"] = turtle.forward,
+	["forward"] = turtle.forward,
+	["forwards"] = turtle.forward,
+	["bk"] = turtle.back,
+	["back"] = turtle.back,
+	["up"] = turtle.up,
+	["dn"] = turtle.down,
+	["down"] = turtle.down,
+	["lt"] = turtle.turnLeft,
+	["left"] = turtle.turnLeft,
+	["rt"] = turtle.turnRight,
+	["right"] = turtle.turnRight,
+}
+
+local nArg = 1
+while nArg <= #tArgs do
+	local sDirection = tArgs[nArg]
+	local nDistance = 1
+	if nArg < #tArgs then
+		local num = tonumber( tArgs[nArg + 1] )
+		if num then
+			nDistance = num
+			nArg = nArg + 1
+		end
+	end
+	nArg = nArg + 1
+
+	local fnHandler = tHandlers[string.lower(sDirection)]
+	if fnHandler then
+		while nDistance > 0 do
+			if fnHandler() then
+				nDistance = nDistance - 1
+			elseif turtle.getFuelLevel() == 0 then
+				print( "Out of fuel" )
+				local function tryRefuel()
+					for n = 1,16 do
+						if turtle.getItemCount(n) > 0 then
+							turtle.select(n)
+							if turtle.refuel(1) then
+							return true
+							end
+						end
+					end
+					return false
+				end
+				if not tryRefuel() then
+					print("Add fuel to continue.")
+					while not tryRefuel() do
+						os.pullEvent("turtle_inventory")
+					end
+				end
+				turtle.select(1)
+				print("Continuing...")
+			else
+				sleep(0.5)
+			end
+		end
+	else
+		print( "No such direction: "..sDirection )
+		print( "Try: forward, back, up, down" )
+		sleep(4)
+		shell.run("move")
+	end
+
+end
+function yesNo()
+term.clear()
+term.setCursorPos(1,1)
+print("Move again?")
+yOrN = read()
+sleep(0.1)
+if yOrN == "yes" then
+	shell.run("move")
+elseif yOrN == "no"then
+	shell.run("reboot")
+else
+		print("Invalid entry!")
+		print("Please enter yes or no")
+		sleep(1.5)
+		yesNo()
+end
+end
+yesNo()

@@ -1,0 +1,337 @@
+-- Digs a tunnel
+
+if term.isColor() then
+term.setTextColor(colors.orange)
+term.setBackgroundColor(colors.black)
+end
+term.clear()
+term.setCursorPos(1,1)
+
+print("Enter length:")
+length = read()
+if string.len(length) <= 0 then
+	print("Invalid entry!")
+	sleep(1)
+	shell.run("dig")
+else
+	length = length - 1
+	length = length + 1
+	if length <= 0 then
+		print("Length must be positive!")
+		sleep(1)
+		shell.run("dig")
+	end
+end
+print("Enter height:")
+height = read()
+if string.len(height) <= 0 then
+	print("Invalid entry!")
+	sleep(1)
+	shell.run("dig")
+else
+	height = height - 1
+	height = height + 1
+	if height <= 0 then
+		print("Height must be positive!")
+		sleep(1)
+		shell.run("dig")
+	end
+end
+
+atZ = 0
+atY = 0
+dir = 1
+prevZ = 0
+H = 1
+numTotalItems = 0
+collected  = 0
+
+function collect()
+	invFull = true
+	collected = collected + 1
+	if math.fmod(collected, 25) == 0 then
+		print( "Mined "..collected.." items." )
+	end
+	for n=1,16 do
+		local nCount = turtle.getItemCount(n)
+		if nCount == 0 then
+			invFull = false
+		end
+	end
+	if invFull then
+		prevZ = atZ
+		print("Inventory is full...")
+		back("full")
+		back("fuel")
+	end
+end
+
+function refuel()
+	local needed = height * 2 + atZ
+	local fuelLevel = turtle.getFuelLevel()
+	if fuelLevel == "unlimited" then
+		return
+	end
+
+	if fuelLevel > needed then
+		return
+	end
+
+	local function tryRefuel()
+		for n=1,16 do
+			if turtle.getItemCount(n) > 0 then
+				turtle.select(n)
+				if turtle.refuel(1) then
+					turtle.select(1)
+					return true
+				end
+			end
+		end
+		turtle.select(1)
+		return false
+	end
+	if not tryRefuel() then
+		prevZ = atZ
+		back("back")
+		while not tryRefuel() do
+			os.pullEvent( "turtle_inventory" )
+		end
+		back("fuel")
+		print( "Resuming Tunnel..." )
+	end
+end
+
+function tryUp()
+	while not turtle.up() do
+		if turtle.detectUp() then
+			if not tryDigUp() then
+				return false
+			end
+		elseif turtle.attackUp() then
+			collect()
+		else
+			sleep( 0.5 )
+		end
+	end
+	return true
+end
+
+function tryDown()
+	while not turtle.down() do
+		if turtle.detectDown() then
+			if not tryDigDown() then
+				return false
+			end
+		elseif turtle.attackDown() then
+			collect()
+		else
+			sleep( 0.5 )
+		end
+	end
+	return true
+end
+
+function drop()
+	if dir == 1 then
+		turtle.turnLeft()
+		turtle.turnLeft()
+		dir = 0
+	elseif dir == 2 then
+		turtle.turnLeft()
+		dir = 0
+	elseif dir == 3 then
+		turtle.turnRight()
+		dir = 0
+	end
+	print( "Unloading items..." )
+	keepStack = true
+	for n=1,16 do
+		local nCount = turtle.getItemCount(n)
+		noSkip = true
+		if nCount > 0 then
+			turtle.select(n)
+			if keepStack and turtle.refuel(0) then
+				keepStack = false
+				noSkip = false
+			end
+		end
+		if noSkip then
+			turtle.drop()
+		end
+	end
+	numTotalItems = numTotalItems + collected
+	print("Collected a total of "..numTotalItems.." items so far.")
+	collected = 0
+	turtle.select(1)
+	return
+end
+
+function back(need)
+	if dir == 1 then
+		turtle.turnLeft()
+		turtle.turnLeft()
+		dir = 0
+	elseif dir == 2 then
+		turtle.turnLeft()
+		dir = 0
+	elseif dir == 3 then
+		turtle.turnRight()
+		dir = 0
+	end
+
+	while H > 1 do
+			tryDown()
+			H = H - 1
+	end
+	if need ~= "fuel" then
+	for k = 1,length do
+		if atZ > 0 then
+		tryForwardTwo()
+		atZ = atZ - 1
+		end
+	end
+	end
+	if need ~= "fuel" then
+	print("Collected "..collected.." items.")
+	drop()
+	end
+	if need == "fuel" then
+		turtle.turnLeft()
+		turtle.turnLeft()
+		for m = 1,length do
+			if atZ < prevZ then
+				tryForward()
+				atZ = atZ + 1
+			end
+		end
+		return
+	end
+	if need == "back" then
+		print( "Add more fuel to continue." )
+		return
+	end
+
+	if need == "full" then
+		return
+	end
+
+	if need == "done" then
+		done()
+	end
+end
+
+function tryDig()
+	while turtle.detect() do
+		if turtle.dig() then
+			collect()
+			sleep(0.5)
+		else
+			return false
+		end
+	end
+	return true
+end
+
+function tryDigUp()
+	while turtle.detectUp() do
+		if turtle.digUp() then
+			collect()
+			sleep(0.5)
+		else
+			return false
+		end
+	end
+	return true
+end
+
+function tryDigDown()
+	while turtle.detectDown() do
+		if turtle.digDown() then
+			collect()
+			sleep(0.5)
+		else
+			return false
+		end
+	end
+	return true
+end
+
+function tryForward()
+	refuel()
+	while not turtle.forward() do
+		if turtle.detect() then
+			if not tryDig() then
+				return false
+			end
+		elseif turtle.attack() then
+			collect()
+		else
+			sleep( 0.5 )
+		end
+	end
+	return true
+end
+function tryForwardTwo()
+	while not turtle.forward() do
+		if turtle.detect() then
+			if not tryDig() then
+				return false
+			end
+		elseif turtle.attack() then
+			collect()
+		else
+			sleep( 0.5 )
+		end
+	end
+	return true
+end
+
+function done()
+	sendInfo = numTotalItems
+	shell.run("doneWithDig", sendInfo)
+end
+print( "Digging..." )
+for n = 1,length do
+	H = 1
+	tryForward()
+	atZ = atZ + 1
+	if math.fmod(atZ, 15) == 0 then
+		print("Corrent length is ".. atZ .." meters.")
+		print(length - atZ .. " meters to go.")
+	end
+	turtle.turnLeft()
+	dir = 2
+	tryDig()
+	turtle.turnRight()
+	turtle.turnRight()
+	dir = 3
+	tryDig()
+	turtle.turnLeft()
+	dir = 1
+
+	for i = 2,height do
+		tryUp()
+		H = H + 1
+		turtle.turnLeft()
+		dir = 2
+		tryDig()
+		turtle.turnRight()
+		turtle.turnRight()
+		dir = 3
+		tryDig()
+		turtle.turnLeft()
+		dir = 1
+	end
+	while H > 1 do
+		tryDown()
+		H = H - 1
+	end
+	turtle.turnLeft()
+	tryDig()
+	turtle.turnRight()
+	turtle.turnRight()
+	tryDig()
+	turtle.turnLeft()
+end
+
+back("done")
